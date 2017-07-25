@@ -1,0 +1,38 @@
+/**
+ * Styles the Workflow fields globally.
+ *
+ * @since {{VERSION}}
+ */
+
+.wfm-workflow-fields {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wfm-field {
+  margin-bottom: 1em;
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+}
+
+.wfm-field-description {
+  font-style: italic;
+  margin-top: 0.5em;
+}
+
+.wfm-field-error {
+  background: #f9b4a1;
+  padding: 0.5em;
+  margin-left: -0.5em;
+  margin-right: -0.5em;
+
+  .wfm-field-error-message {
+    color: #8b4a2e;
+    font-weight: bold;
+    margin-top: 0.5em;
+  }
+}

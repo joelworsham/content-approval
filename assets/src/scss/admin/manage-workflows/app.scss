@@ -1,0 +1,25 @@
+/**
+ * Provides the app styling for the "Manage Workflows" administrative page.
+ *
+ * @since {{VERSION}}
+ *
+ * @packace WorkflowManager
+ * @subpackage WorkflowManager/admin/manageWorkflows
+ */
+
+// Global settings
+@import "../../global/global";
+
+// Vendor
+@import "vendor/_react-select.scss";
+
+@import "page";
+
+// Workflow fields
+@import "modal-workflow-fields/global";
+@import "modal-workflow-fields/text";
+@import "modal-workflow-fields/hidden";
+@import "modal-workflow-fields/html";
+
+// Workflows table
+@import "workflows-table/base";

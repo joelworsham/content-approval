@@ -1,0 +1,58 @@
+/**
+ * Styles the Workflows table.
+ *
+ * @since {{VERSION}}
+ */
+
+.wfm-workflows-table {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  background-color: #fff;
+  width: 100%;
+  margin-top: 0.5em;
+
+  thead {
+    th {
+      text-align: left;
+      padding: 1em;
+      border-bottom: 1px solid #ddd;
+    }
+  }
+
+  tbody {
+    td {
+      padding: 1em;
+    }
+
+    tr:nth-child(odd) {
+      td {
+        background-color: #f7f7f7;
+      }
+    }
+  }
+
+  .wfm-workflow-deleting {
+    td {
+      position: relative;
+      background-color: $color-error !important;
+      color: #fff;
+      opacity: 0.6;
+
+      .spinner {
+        position: absolute;
+        left: 100%;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+}
+
+.wfm-workflows-table-loading {
+  .spinner {
+    float: none;
+    margin: 0 0 0 10px;
+  }
+}
