@@ -7,9 +7,26 @@ const source     = require('vinyl-source-stream');
 const buffer     = require('vinyl-buffer');
 const gutil      = require('gulp-util');
 
+// Admin
+gulp.task('admin_scss', function () {
+    return gulp.src('./assets/src/scss/admin/app.scss')
+        .pipe($.rename('wfm-admin.min.css'))
+        .pipe($.sourcemaps.init())
+        .pipe($.sass()
+            .on('error', $.sass.logError))
+        .pipe($.sourcemaps.init())
+        // .pipe($.autoprefixer({
+        //     browsers: ['last 2 versions', 'ie >= 9']
+        // }))
+        .pipe($.sass({outputStyle: 'compressed'}))
+        .pipe($.sourcemaps.write())
+        .pipe(gulp.dest('./assets/dist/css/'))
+        .pipe($.notify({message: 'SASS Admin complete'}));
+});
+
 // Manage Workflows
 gulp.task('manage_workflows_scss', function () {
-    return gulp.src('./assets/src/scss/admin/manage-workflows/app.scss')
+    return gulp.src('./assets/src/scss/manage-workflows/app.scss')
         .pipe($.rename('wfm-manage-workflows.min.css'))
         .pipe($.sourcemaps.init())
         .pipe($.sass()
@@ -32,8 +49,8 @@ gulp.task('manage_workflows_js', function () {
             }]
         ],
         entries: [
-            './assets/src/js/admin/manage-workflows/index.js',
-            // './assets/src/js/admin/manage-workflows/tests/tests.js'
+            './assets/src/js/manage-workflows/index.js',
+            // './assets/src/js/manage-workflows/tests/tests.js'
         ],
         debug: true
     })
@@ -50,7 +67,7 @@ gulp.task('manage_workflows_js_prod', function () {
                 presets: ["es2015", "react"]
             }]
         ],
-        entries: ['./assets/src/js/admin/manage-workflows/app.js'],
+        entries: ['./assets/src/js/manage-workflows/app.js'],
         debug: true
     })
         .bundle()
@@ -105,17 +122,20 @@ gulp.task('generate_pot', function () {
         .pipe(gulp.dest('./languages/workflow-manager.pot'));
 });
 
-gulp.task('default', ['manage_workflows_scss', 'manage_workflows_js'], function () {
+gulp.task('default', ['admin_scss', 'manage_workflows_scss', 'manage_workflows_js'], function () {
     gulp.watch([
-        './assets/src/scss/global/**/*.scss',
-        './assets/src/scss/admin/manage-workflows/**/*.scss'
+        './assets/src/scss/manage-workflows/**/*.scss'
     ], ['manage_workflows_scss']);
-    gulp.watch(['./assets/src/js/admin/manage-workflows/**/*.js'], ['manage_workflows_js']);
+    gulp.watch([
+        './assets/src/scss/admin/**/*.scss'
+    ], ['admin_scss']);
+    gulp.watch(['./assets/src/js/manage-workflows/**/*.js'], ['manage_workflows_js']);
 });
 
 gulp.task('build', [
     'version',
     'apply-prod-environment',
+    'admin_scss',
     'manage_workflows_scss',
     'manage_workflows_js_prod',
     'generate_pot'

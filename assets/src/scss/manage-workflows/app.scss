@@ -3,12 +3,12 @@
  *
  * @since {{VERSION}}
  *
- * @packace WorkflowManager
+ * @package WorkflowManager
  * @subpackage WorkflowManager/admin/manageWorkflows
  */
 
 // Global settings
-@import "../../global/global";
+@import "../global/global";
 
 // Vendor
 @import "vendor/_react-select.scss";

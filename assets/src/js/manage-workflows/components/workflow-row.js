@@ -19,13 +19,13 @@ export const WorkflowRow = ({
 }) => (
     <tr className={(isDeleting ? 'wfm-workflow-deleting' : '')}>
         <td>
-            <a href="#" onClick={onTitleClick}>
+            <a href="#" className="workflow-title" onClick={onTitleClick}>
                 {title}
             </a>
         </td>
 
         <td>
-            <a href="#" onClick={onDeleteClick}>
+            <a href="#" className="workflow-delete button-link button-link-delete" onClick={onDeleteClick}>
                 {l10n['delete']}
             </a>
         </td>

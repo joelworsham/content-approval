@@ -336,6 +336,8 @@ class WorkflowForm extends React.Component {
         const id        = state.workflowModal.id;
         const component = this;
 
+        console.log(fields);
+
         return (
             <form>
                 {workflowSchema.map(fieldSchema => (

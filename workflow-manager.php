@@ -12,6 +12,11 @@
  * Domain Path: /languages
  */
 
+// TODO "Publish" button on pending posts change wording
+// TODO Hide post status dropdown on pending post
+// TODO Figure out how to handle/hide other pending post changes
+// TODO Make "(Pending Changes)" more styled and less intrusive
+
 defined( 'ABSPATH' ) || die();
 
 if ( ! class_exists( 'WorkflowManager' ) ) {
@@ -81,6 +86,7 @@ if ( ! class_exists( 'WorkflowManager' ) ) {
 			require_once WORKFLOWMANAGER_DIR . 'core/workflowmanager-functions.php';
 
 			require_once WORKFLOWMANAGER_DIR . 'core/post-types/class-workflowmanager-post-types.php';
+			require_once WORKFLOWMANAGER_DIR . 'core/class-workflowmanager-post-limitations.php';
 
 			if ( is_admin() ) {
 
@@ -95,6 +101,14 @@ if ( ! class_exists( 'WorkflowManager' ) ) {
 		 * @access private
 		 */
 		function register_assets() {
+
+			// Admin
+			wp_register_style(
+				'wfm-admin',
+				WORKFLOWMANAGER_URI . '/assets/dist/css/wfm-admin.min.css',
+				array(),
+				defined( 'WP_DEBUG' ) && WP_DEBUG ? time() : WORKFLOWMANAGER_VERSION
+			);
 
 			// Manage Workflows
 			wp_register_style(

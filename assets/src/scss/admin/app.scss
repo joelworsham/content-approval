@@ -1,0 +1,14 @@
+/**
+ * Provides the app styling for the admin side of WordPress.
+ *
+ * @since {{VERSION}}
+ *
+ * @package WorkflowManager
+ * @subpackage WorkflowManager/admin
+ */
+
+// Global settings
+@import "../global/global";
+
+@import "list-table";
+@import "edit-post";

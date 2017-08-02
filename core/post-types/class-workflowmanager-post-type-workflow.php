@@ -93,6 +93,17 @@ class WorkflowManager_PostType_Workflow {
 		) );
 
 		register_post_type( 'workflow', $post_args );
+
+		register_post_status( 'workflow_pending', array(
+			'label'                     => __( 'Pending', 'workflow-manager' ),
+//			'label_count'               => _n_noop( 'Pending <span class="count">(%s)</span>', 'Pending <span class="count">(%s)</span>' ),
+			'internal'                  => true,
+			'public'                    => false,
+			'private'                   => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => false,
+			'show_in_admin_status_list' => false,
+		) );
 	}
 
 	/**
@@ -114,7 +125,7 @@ class WorkflowManager_PostType_Workflow {
 			'submission_roles',
 			'approval_users',
 			'approval_roles',
-		));
+		) );
 
 		foreach ( $custom_meta as $field ) {
 
@@ -140,7 +151,7 @@ class WorkflowManager_PostType_Workflow {
 
 		$post_id = $object['id'];
 
-		return get_post_meta( $post_id, $field, true );
+		return get_post_meta( $post_id, $field );
 	}
 
 	/**
@@ -154,6 +165,25 @@ class WorkflowManager_PostType_Workflow {
 	 * @param $field
 	 */
 	function rest_update_field( $meta, $post, $field ) {
+
+		if ( is_array( $meta ) ) {
+
+			$current_values = get_post_meta( $post->ID, $field );
+			$delete_values = array_diff( $current_values, $meta );
+			$new_values = array_diff( $meta, $current_values );
+
+			foreach ( $delete_values as $delete_value ) {
+
+				delete_post_meta( $post->ID, $field, $delete_value );
+			}
+
+			foreach ( $new_values as $new_value ) {
+
+				add_post_meta( $post->ID, $field, $new_value );
+			}
+
+			return;
+		}
 
 		update_post_meta( $post->ID, $field, $meta );
 	}

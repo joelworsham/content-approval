@@ -42,9 +42,9 @@ class FieldText extends React.Component {
                 }
 
                 {this.props.error &&
-                    <div className="wfm-field-error-message">
-                        {this.props.error}
-                    </div>
+                <div className="wfm-field-error-message">
+                    {this.props.error}
+                </div>
                 }
             </div>
         )
@@ -65,6 +65,29 @@ class FieldSelect extends React.Component {
         this.state = {
             value: this.props.value,
         };
+
+        this.onChange = this.onChange.bind(this);
+    }
+
+    /**
+     * Fires on change.
+     *
+     * The main purpose is to consolidate the value from label and value to only value.
+     *
+     * @param value
+     */
+    onChange(value) {
+
+        this.setState({value: value});
+
+        let newValues = [];
+
+        for (let i = 0; i < value.length; i++) {
+
+            newValues.push(value[i].value);
+        }
+
+        this.props.onChange(newValues);
     }
 
     render() {
@@ -93,10 +116,7 @@ class FieldSelect extends React.Component {
                     placehodler={this.props.placeholder}
                     multi={this.props.multiple}
                     loadOptions={this.props.loadOptions}
-                    onChange={(value) => {
-                        component.setState({value: value});
-                        component.props.onChange(value);
-                    }}
+                    onChange={this.onChange}
                     {...translations}
 
                 />
@@ -110,10 +130,7 @@ class FieldSelect extends React.Component {
                 placehodler={this.props.placeholder}
                 multi={this.props.multiple}
                 options={this.props.options}
-                onChange={(value) => {
-                    component.setState({value: value});
-                    component.props.onChange(value);
-                }}
+                onChange={this.onChange}
                 {...translations}
             />
         }
@@ -152,11 +169,11 @@ class FieldSelect extends React.Component {
  * @constructor
  */
 const FieldHidden = ({
-    name,
-    value,
-    disabled,
-    classes,
-}) => {
+                         name,
+                         value,
+                         disabled,
+                         classes,
+                     }) => {
 
     const inputArgs = {
         type: 'hidden',
@@ -184,10 +201,10 @@ const FieldHidden = ({
  * @constructor
  */
 const FieldHTML = ({
-    label,
-    description,
-    classes,
-}) => {
+                       label,
+                       description,
+                       classes,
+                   }) => {
 
     return (
         <div className={(classes || '') + ' wfm-field wfm-field-html'}>

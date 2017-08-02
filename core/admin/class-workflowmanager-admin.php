@@ -49,7 +49,18 @@ class WorkflowManager_Admin {
 
 		$this->includes();
 
-		add_action( 'admin_init', array( __CLASS__, 'get_pages' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+
+	/**
+	 * Enqueues admin scripts.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
+	function enqueue_scripts() {
+
+		wp_enqueue_style( 'wfm-admin' );
 	}
 
 	/**
@@ -69,7 +80,7 @@ class WorkflowManager_Admin {
 		$pages = apply_filters( 'wfm_admin_pages', array(
 			array(
 				'id'        => 'manage_workflows',
-				'callback' => array( 'WorkflowManager_AdminPage', 'page_body_workflows' ),
+				'callback'  => array( 'WorkflowManager_AdminPage', 'page_body_workflows' ),
 				/* translators: Page title for the main admin page. */
 				'title'     => __( 'Manage Workflows', 'workflow-manager' ),
 				/* translators: Tab title for the main admin page. */

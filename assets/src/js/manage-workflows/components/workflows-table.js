@@ -7,6 +7,8 @@ import {getWorkflows, getIsFetching, getErrorMessage} from '../reducers/workflow
 import * as workflowActions from '../actions/workflows';
 import * as modalActions from '../actions/workflow-modal';
 
+const l10n = WFM_ManageWorkflows['l10n'];
+
 /**
  * Container for showing the table containing all Workflows.
  *
@@ -36,6 +38,23 @@ class WorkflowsTable extends React.Component {
         const {fetchWorkflows} = this.props;
 
         fetchWorkflows();
+    }
+
+    /**
+     * Confirms deleting the workflow.
+     *
+     * @since {{VERSION}}
+     *
+     * @param {int} id ID of the workflow to delete.
+     */
+    deleteWorkflowConfirm(id) {
+
+        const {deleteWorkflow} = this.props;
+
+        if (confirm(l10n['confirm_delete_workflow'])) {
+
+            deleteWorkflow(id);
+        }
     }
 
     /**
@@ -75,7 +94,7 @@ class WorkflowsTable extends React.Component {
             <WorkflowsTableView
                 workflows={workflows}
                 onWorkflowClick={(id, fields) => openWorkflowModal(id, fields)}
-                onDeleteClick={(id) => deleteWorkflow(id)}
+                onDeleteClick={(id) => this.deleteWorkflowConfirm(id)}
                 getState={store.getState}
             />
         );
