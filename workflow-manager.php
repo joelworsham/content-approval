@@ -12,10 +12,29 @@
  * Domain Path: /languages
  */
 
-// TODO "Publish" button on pending posts change wording
-// TODO Hide post status dropdown on pending post
+// TODO Approval users must have list of what revisions they can access. What can they access? That's tricky.
+// TODO Delete user meta for revisions on post revision delete
+// TODO Revision table improvements such as: pagination, search, faster query
+// TODO When viewing revision as approval user, either don't allow edit somehow or allow updating revision without publishing
+// TODO Preview on revisions not working
 // TODO Figure out how to handle/hide other pending post changes
-// TODO Make "(Pending Changes)" more styled and less intrusive
+// TODO See if possible to use current_user_can() for "approve_post"
+// TODO View revisions contextually for posts
+
+add_action( 'init', function () {
+
+	register_taxonomy( 'page-test2', 'page', array(
+		'labels' => array(
+			'name' => 'Test 2',
+		),
+	));
+
+	register_taxonomy( 'page-test', 'page', array(
+		'labels' => array(
+			'name' => 'Test',
+		),
+	));
+});
 
 defined( 'ABSPATH' ) || die();
 

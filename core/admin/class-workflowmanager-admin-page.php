@@ -42,8 +42,8 @@ class WorkflowManager_AdminPage {
 
 		$this->active_page = self::get_active_page();
 
-		add_action( 'wfm_page_header', array( $this, 'page_menu' ), 5 );
-		add_action( 'wfm_page_header', array( $this, 'page_title' ), 10 );
+		add_action( 'wfm_page_header', array( $this, 'page_title' ), 5 );
+		add_action( 'wfm_page_header', array( $this, 'page_menu' ), 15 );
 		add_action( 'wfm_page_body', array( $this, 'page_body' ), 10 );
 	}
 
@@ -75,11 +75,12 @@ class WorkflowManager_AdminPage {
 	 */
 	public static function get_active_page() {
 
-		$pages = WorkflowManager_Admin::get_pages();
+		$pages     = WorkflowManager_Admin::get_pages();
+		$pages_map = array_flip( wp_list_pluck( $pages, 'id' ) );
 
-		if ( isset( $_GET['tab'] ) && isset( $pages[ $_GET['tab'] ] ) ) {
+		if ( isset( $_GET['tab'] ) && isset( $pages_map[ $_GET['tab'] ] ) ) {
 
-			$active_page = $pages[ $_GET['tab'] ];
+			$active_page = $pages[ $pages_map[ $_GET['tab'] ] ];
 
 		} else {
 
@@ -144,10 +145,26 @@ class WorkflowManager_AdminPage {
 	 * @since {{VERSION}}
 	 * @access private
 	 */
-	static function page_body_workflows() {
+	static function page_body_manage_workflows() {
 
 		$workflows = wfm_get_workflows();
 
 		include WORKFLOWMANAGER_DIR . 'core/admin/views/pages/manage-workflows.php';
+	}
+
+	/**
+	 * Outputs the page body for Revisions.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
+	static function page_body_manage_revisions() {
+
+		require_once WORKFLOWMANAGER_DIR . 'core/admin/includes/class-wfm-revisions-list-table.php';
+		$revision_list_table = new WFM_Revisions_ListTable();
+
+		$revision_list_table->prepare_items();
+
+		include WORKFLOWMANAGER_DIR . 'core/admin/views/pages/manage-revisions.php';
 	}
 }

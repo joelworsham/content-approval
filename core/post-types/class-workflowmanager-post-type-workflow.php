@@ -30,7 +30,14 @@ class WorkflowManager_PostType_Workflow {
 	public function __construct() {
 
 		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_action( 'post_action_approve', array( $this, 'action_approve_post' ) );
 		add_action( 'rest_api_init', array( $this, 'register_rest_custom_fields' ) );
+		add_action( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
+
+		if ( isset( $_GET['approved'] ) ) {
+
+			add_action( 'wfm_page_header', array( $this, 'approved_admin_notice' ), 10 );
+		}
 	}
 
 	/**
@@ -96,7 +103,6 @@ class WorkflowManager_PostType_Workflow {
 
 		register_post_status( 'workflow_pending', array(
 			'label'                     => __( 'Pending', 'workflow-manager' ),
-//			'label_count'               => _n_noop( 'Pending <span class="count">(%s)</span>', 'Pending <span class="count">(%s)</span>' ),
 			'internal'                  => true,
 			'public'                    => false,
 			'private'                   => false,
@@ -104,6 +110,63 @@ class WorkflowManager_PostType_Workflow {
 			'show_in_admin_all_list'    => false,
 			'show_in_admin_status_list' => false,
 		) );
+	}
+
+	/**
+	 * Handles action of approving a post.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 *
+	 * @param int $post_ID Post ID of revision to approve.
+	 */
+	function action_approve_post( $post_ID ) {
+
+		global $sendback;
+
+		$original_post_ID = wfm_approve_post( $post_ID );
+
+		if ( $original_post_ID === false ) {
+
+			wp_redirect( add_query_arg( 'approved', - 1, $sendback ) );
+			exit();
+
+		} else {
+
+			wp_redirect( add_query_arg( 'approved', $original_post_ID, $sendback ) );
+			exit();
+		}
+	}
+
+	/**
+	 * Admin notice for after a revision is approved.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
+	function approved_admin_notice() {
+
+		$original_post_ID = $_REQUEST['approved'];
+
+		if ( $original_post_ID !== '-1' ) {
+
+			$message = sprintf(
+			/* translators: %s is approved post title */
+				__( 'Revision successfully approved for %s.', 'workflow-manager' ),
+				'<a href="' . get_permalink( $original_post_ID ) . '">' . get_the_title( $original_post_ID ) . '</a>'
+			);
+
+		} else {
+
+			$message = __( 'Could not approve the revision. Permission denied.', 'workflow-manager' );
+		}
+		?>
+        <div class="notice notice-<?php echo $original_post_ID !== '-1' ? 'success' : 'error'; ?>">
+            <p>
+				<?php echo $message; ?>
+            </p>
+        </div>
+		<?php
 	}
 
 	/**
@@ -169,8 +232,8 @@ class WorkflowManager_PostType_Workflow {
 		if ( is_array( $meta ) ) {
 
 			$current_values = get_post_meta( $post->ID, $field );
-			$delete_values = array_diff( $current_values, $meta );
-			$new_values = array_diff( $meta, $current_values );
+			$delete_values  = array_diff( $current_values, $meta );
+			$new_values     = array_diff( $meta, $current_values );
 
 			foreach ( $delete_values as $delete_value ) {
 
@@ -186,6 +249,26 @@ class WorkflowManager_PostType_Workflow {
 		}
 
 		update_post_meta( $post->ID, $field, $meta );
+	}
+
+	/**
+	 * Updates post action messages for revisions.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 *
+	 * @param array $messages
+	 *
+	 * @return array
+	 */
+	function post_updated_messages( $messages ) {
+
+		foreach ( $messages as $post_type => $message_group ) {
+
+			$messages[ $post_type ][6] = __( 'Revision updated.', 'workflow-manager' );
+		}
+
+		return $messages;
 	}
 
 	/**

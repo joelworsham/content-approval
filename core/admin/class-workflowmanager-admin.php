@@ -50,6 +50,7 @@ class WorkflowManager_Admin {
 		$this->includes();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 	}
 
 	/**
@@ -61,6 +62,37 @@ class WorkflowManager_Admin {
 	function enqueue_scripts() {
 
 		wp_enqueue_style( 'wfm-admin' );
+	}
+
+	/**
+	 * Filters admin body class.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 *
+	 * @param string $class
+	 *
+	 * @return string
+	 */
+	function admin_body_class( $class ) {
+
+		if ( isset( $_GET['page'] ) && $_GET['page'] === 'workflows' ) {
+
+			$class .= ' wfm-page';
+
+			$pages = self::get_pages();
+
+			if ( ! isset( $_GET['tab'] ) ) {
+
+				$class .= " wfm-{$pages[0]['id']}";
+
+			} else {
+
+				$class .= " wfm-$_GET[tab]";
+			}
+		}
+
+		return $class;
 	}
 
 	/**
@@ -79,13 +111,21 @@ class WorkflowManager_Admin {
 		 */
 		$pages = apply_filters( 'wfm_admin_pages', array(
 			array(
+				'id'        => 'manage_revisions',
+				'callback'  => array( 'WorkflowManager_AdminPage', 'page_body_manage_revisions' ),
+				/* translators: Page title for the main admin page. */
+				'title'     => __( 'Manage Revisions', 'workflow-manager' ),
+				/* translators: Tab title for the main admin page. */
+				'tab_title' => __( 'Revisions', 'workflow-manager' ),
+			),
+			array(
 				'id'        => 'manage_workflows',
-				'callback'  => array( 'WorkflowManager_AdminPage', 'page_body_workflows' ),
+				'callback'  => array( 'WorkflowManager_AdminPage', 'page_body_manage_workflows' ),
 				/* translators: Page title for the main admin page. */
 				'title'     => __( 'Manage Workflows', 'workflow-manager' ),
 				/* translators: Tab title for the main admin page. */
 				'tab_title' => __( 'Workflows', 'workflow-manager' ),
-			)
+			),
 		) );
 
 		return $pages;

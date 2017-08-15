@@ -17,8 +17,8 @@ defined( 'ABSPATH' ) || die();
 		 *
 		 * @since {{VERSION}}
 		 *
-		 * @hooked WorkflowManager_AdminPage::page_menu() 5
-		 * @hooked WorkflowManager_AdminPage::page_header() 10
+		 * @hooked WorkflowManager_AdminPage::page_header() 5
+		 * @hooked WorkflowManager_AdminPage::page_menu() 10
 		 */
 		do_action( 'wfm_page_header' );
 		?>

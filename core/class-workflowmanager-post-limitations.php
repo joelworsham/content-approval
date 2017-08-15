@@ -37,10 +37,11 @@ class WorkflowManager_PostLimitations {
 			add_action( 'add_meta_boxes', array( $this, 'add_revision_meta_boxes' ) );
 		}
 
-		if ( wfm_current_post_is_revision( isset( $_GET['post'] ) ? $_GET['post'] : false ) ) {
+		if ( wfm_post_is_revision( isset( $_GET['post'] ) ? $_GET['post'] : false ) ) {
 
 			add_action( 'admin_notices', array( $this, 'notice_post_revision' ) );
-			$this->redirect_from_restricted_pending();
+			add_action( 'add_meta_boxes', array( $this, 'add_revision_meta_boxes' ) );
+//			$this->redirect_from_restricted_pending();
 		}
 
 		add_action( 'admin_notices', array( $this, 'notice_restricted_revision' ) );
@@ -202,7 +203,9 @@ class WorkflowManager_PostLimitations {
 	 */
 	private function save_pending_post( $postarr, $post_ID = 0 ) {
 
-		$postarr['post_status'] = 'workflow_pending';
+		$postarr['post_status']   = 'workflow_pending';
+		$postarr['post_date']     = current_time( 'mysql' );
+		$postarr['post_date_gmt'] = get_date_from_gmt( $postarr['post_date_gmt'] );
 		unset( $postarr['ID'] );
 
 		$pending_post_ID = wp_insert_post( $postarr );
@@ -288,13 +291,20 @@ class WorkflowManager_PostLimitations {
 		$post_type_object = get_post_type_object( $post_type );
 		$can_publish      = current_user_can( $post_type_object->cap->publish_posts );
 
-		if ( wfm_current_post_is_revision() ) {
+		if ( wfm_post_is_current_user_approval() ) {
 
-			$submit_text = __( 'Update Revision', 'workflow-manager' );
+			$submit_text = __( 'Approve Revision', 'workflow-manager' );
 
 		} else {
 
-			$submit_text = __( 'Submit for Review', 'workflow-manager' );
+			if ( wfm_post_is_revision() ) {
+
+				$submit_text = __( 'Update Revision', 'workflow-manager' );
+
+			} else {
+
+				$submit_text = __( 'Submit for Review', 'workflow-manager' );
+			}
 		}
 		?>
         <div class="submitbox" id="submitpost">
@@ -330,10 +340,11 @@ class WorkflowManager_PostLimitations {
 
             <div id="major-publishing-actions">
 
-				<?php if ( wfm_current_post_is_revision() ) : ?>
+				<?php if ( wfm_post_is_revision() ) : ?>
                     <div id="delete-action">
                         <a class="submitdelete deletion"
-                           href="<?php echo get_delete_post_link( $post->ID, '', true ); ?>">
+                           href="<?php echo get_delete_post_link( $post->ID, '', true ); ?>"
+                           onClick="return confirm('<?php _e( 'Are you sure? This cannot be undone.', 'workflow-manager' ); ?>')">
 							<?php _e( 'Delete', 'workflow-manager' ); ?>
                         </a>
                     </div>
@@ -342,7 +353,7 @@ class WorkflowManager_PostLimitations {
                 <div id="publishing-action">
                     <span class="spinner"></span>
                     <input name="original_publish" type="hidden" id="original_publish"
-                           value="<?php esc_attr_e( 'Submit for Review', 'workflow-manager' ) ?>"/>
+                           value="<?php echo $submit_text; ?>"/>
 					<?php submit_button( $submit_text, 'primary large', 'publish', false ); ?>
                 </div>
                 <div class="clear"></div>
@@ -367,11 +378,24 @@ class WorkflowManager_PostLimitations {
             <p>
                 <strong>
 					<?php
-					printf(
-						__( 'This is a pending revision of the %1$s "%2$s".', 'workflow-manager' ),
-						$post_type_object->labels->singular_name,
-						get_the_title( $original )
-					);
+					if ( wfm_post_is_current_user_approval() ) {
+
+						printf(
+							__( 'This is a pending revision of the %1$s %3$s"%2$s"%4$s.', 'workflow-manager' ),
+							$post_type_object->labels->singular_name,
+							get_the_title( $original ),
+							'<a href="' . get_edit_post_link( $original ) . '">',
+							'</a>'
+						);
+
+					} else {
+
+						printf(
+							__( 'This is a pending revision of the %1$s "%2$s".', 'workflow-manager' ),
+							$post_type_object->labels->singular_name,
+							get_the_title( $original )
+						);
+					}
 					?>
                 </strong>
             </p>
